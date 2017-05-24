@@ -13,13 +13,13 @@
  * 4            Key 5 (momentary switch)
  * 5            Key 6 (momentary switch)
  * 6            Key 7 (momentary switch)            
- * 7            FREE
+ * 7            Key 8 (momentary switch)   
  * 8            FREE
  * 9            Audio Out 1
  * 10           Audio Out 2
  * 11           LED 1
- * 12           Meta Key (momentary switch)
- * 13           FREE
+ * 12           F1 Key (momentary switch)
+ * 13           F2 Key (momentary switch)
  * ANALOG PINS ===========================
  * 0            FREE
  * 1            FREE
@@ -39,23 +39,28 @@ Oscil <SAW_ANALOGUE512_NUM_CELLS, AUDIO_RATE> aSaw(SAW_ANALOGUE512_DATA);
 
 #define CONTROL_RATE 64
 
+int incomingByte = 0;
+
 void setup(){
+  Serial.begin(9600);
   startMozzi(CONTROL_RATE); // set a control rate of 64 (powers of 2 please)
   aSaw.setFreq(440); // set the frequency
 }
-
 
 void updateControl(){
   // put changing controls in here
 }
 
-
 int updateAudio(){
   return aSaw.next(); // return an int signal centred around 0
 }
 
-
 void loop(){
+  if (Serial.available() > 0) {
+    incomingByte = Serial.read();
+    Serial.println("Received: ");
+  }
+  
   audioHook(); // required here
 }
 
