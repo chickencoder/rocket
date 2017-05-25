@@ -1,8 +1,9 @@
 /**
- * Orbiter-1
+ * Rocket Software for the Orbiter-1
  * Portable polyphonic instrument
  * Written By Jesse Sibley 
  * http://chickencoder.github.io/orbiter
+ * http://github.com/chickencoder/rocket
  * 
  * Pin          Connection
  * DIGTIAL PINS ==========================
@@ -31,11 +32,12 @@
 
 
 #include <MozziGuts.h>
+#include <mozzi_midi.h>
 #include <Oscil.h>
-#include <tables/saw_analogue512_int8.h>
+#include <tables/smoothsquare8192_int8.h>
 
 // use: Oscil <table_size, update_rate> oscilName (wavetable), look in .h file of table #included above
-Oscil <SAW_ANALOGUE512_NUM_CELLS, AUDIO_RATE> aSaw(SAW_ANALOGUE512_DATA);
+Oscil <SMOOTHSQUARE8192_NUM_CELLS, AUDIO_RATE> aSq(SMOOTHSQUARE8192_DATA);
 
 #define CONTROL_RATE 64
 
@@ -44,7 +46,7 @@ int incomingByte = 0;
 void setup(){
   Serial.begin(9600);
   startMozzi(CONTROL_RATE); // set a control rate of 64 (powers of 2 please)
-  aSaw.setFreq(440); // set the frequency
+  aSq.setFreq(440); // set the frequency
 }
 
 void updateControl(){
@@ -52,13 +54,15 @@ void updateControl(){
 }
 
 int updateAudio(){
-  return aSaw.next(); // return an int signal centred around 0
+  return aSq.next(); // return an int signal centred around 0
 }
 
 void loop(){
   if (Serial.available() > 0) {
     incomingByte = Serial.read();
-    Serial.println("Received: ");
+    Serial.print("Received: ");
+    Serial.println(incomingByte, DEC);
+    aSq.setFreq(mtof(incomingByte));
   }
   
   audioHook(); // required here
