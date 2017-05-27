@@ -1,0 +1,35 @@
+/** 
+ *  MONOPHONY BELOW....
+ */
+//int chooseChannel() {
+//  return 0;
+//}
+//
+//void handleKeyInputs() {
+//  if (digitalRead(0) == LOW) {
+//    triggerNote(k1, chooseChannel());
+//  } else if (digitalRead(1) == LOW) {
+//    triggerNote(k2, chooseChannel());
+//  } else if (digitalRead(2) == LOW) {
+//    triggerNote(k3, chooseChannel());
+//  } else if (digitalRead(3) == LOW) {
+//    triggerNote(k4, chooseChannel());
+//  } else if (digitalRead(4) == LOW) {
+//    triggerNote(k5, chooseChannel());
+//  } else if (digitalRead(5) == LOW) {
+//    triggerNote(k6, chooseChannel());
+//  } else if (digitalRead(6) == LOW) {
+//    triggerNote(k7, chooseChannel());
+//  } else if (digitalRead(7) == LOW) {
+//    triggerNote(k8, chooseChannel());
+//  } else if (noteOneDelay.ready()) {
+//    noteOneGain = 0;
+//  } else if (noteTwoDelay.ready()) {
+//    noteTwoGain = 0;
+//  } else if (noteThreeDelay.ready()) {
+//    noteThreeGain = 0;
+//  } else if (noteFourDelay.ready()) {
+//    noteFourGain = 0;
+//  }
+//}
+

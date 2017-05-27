@@ -30,41 +30,65 @@
  * 5            Potentiometer 2
  */
 
-
 #include <MozziGuts.h>
-#include <mozzi_midi.h>
 #include <Oscil.h>
+#include <ADSR.h>
+#include <EventDelay.h>
+#include <mozzi_midi.h>
 #include <tables/smoothsquare8192_int8.h>
 
-// use: Oscil <table_size, update_rate> oscilName (wavetable), look in .h file of table #included above
-Oscil <SMOOTHSQUARE8192_NUM_CELLS, AUDIO_RATE> aSq(SMOOTHSQUARE8192_DATA);
+#define CONTROL_RATE 128
 
-#define CONTROL_RATE 64
+/** Osciallators **/
+Oscil <1024, AUDIO_RATE> noteOne(SMOOTHSQUARE8192_DATA);
+Oscil <1024, AUDIO_RATE> noteTwo(SMOOTHSQUARE8192_DATA);
+Oscil <1024, AUDIO_RATE> noteThree(SMOOTHSQUARE8192_DATA);
+Oscil <1024, AUDIO_RATE> noteFour(SMOOTHSQUARE8192_DATA);
+Oscil <1024, AUDIO_RATE> noteFive(SMOOTHSQUARE8192_DATA);
+Oscil <1024, AUDIO_RATE> noteSix(SMOOTHSQUARE8192_DATA);
+Oscil <1024, AUDIO_RATE> noteSeven(SMOOTHSQUARE8192_DATA);
+Oscil <1024, AUDIO_RATE> noteEight(SMOOTHSQUARE8192_DATA);
 
-int incomingByte = 0;
+/** Envelopes **/
+ADSR <CONTROL_RATE, AUDIO_RATE> noteOneEnvelope;
+ADSR <CONTROL_RATE, AUDIO_RATE> noteTwoEnvelope;
+ADSR <CONTROL_RATE, AUDIO_RATE> noteThreeEnvelope;
+ADSR <CONTROL_RATE, AUDIO_RATE> noteFourEnvelope;
+ADSR <CONTROL_RATE, AUDIO_RATE> noteFiveEnvelope;
+ADSR <CONTROL_RATE, AUDIO_RATE> noteSixEnvelope;
+ADSR <CONTROL_RATE, AUDIO_RATE> noteSevenEnvelope;
+ADSR <CONTROL_RATE, AUDIO_RATE> noteEightEnvelope;
 
-void setup(){
-  Serial.begin(9600);
-  startMozzi(CONTROL_RATE); // set a control rate of 64 (powers of 2 please)
-  aSq.setFreq(440); // set the frequency
+int MASTER_VOLUME = 1;
+
+void setup() {
+  Serial.begin(115200);
+  startMozzi(CONTROL_RATE);  
+  setupInputs();
+  setupStandardEnv();
+  updateNotes();
 }
 
-void updateControl(){
-  // put changing controls in here
+void updateControl() {
+  handleKeyInputs();
+  updateEnvelopes();
 }
 
-int updateAudio(){
-  return aSq.next(); // return an int signal centred around 0
+int updateAudio() {
+  int chanA = ((int) noteOne.next() * (long) noteOneEnvelope.next()) >> 8;
+  int chanB = ((int) noteTwo.next() * (long) noteTwoEnvelope.next()) >> 9;
+  int chanC = ((int) noteThree.next() * (long) noteThreeEnvelope.next()) >> 9;
+  int chanD = ((int) noteFour.next() * (long) noteFourEnvelope.next()) >> 9;
+  int chanE = ((int) noteFive.next() * (long) noteFiveEnvelope.next()) >> 9;
+  int chanF = ((int) noteSix.next() * (long) noteSixEnvelope.next()) >> 9;
+  int chanG = ((int) noteSeven.next() * (long) noteSevenEnvelope.next()) >> 9;
+  int chanH = ((int) noteEight.next() * (long) noteEightEnvelope.next()) >> 9;
+  int master = (chanA + chanB + chanC + chanD + chanE + chanF + chanG + chanH);
+  return (master * MASTER_VOLUME);
 }
 
-void loop(){
-  if (Serial.available() > 0) {
-    incomingByte = Serial.read();
-    Serial.print("Received: ");
-    Serial.println(incomingByte, DEC);
-    aSq.setFreq(mtof(incomingByte));
-  }
-  
-  audioHook(); // required here
+void loop() {
+  audioHook();
 }
+
 
