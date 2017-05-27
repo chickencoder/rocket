@@ -1,8 +1,0 @@
-{
-    "sketch": "rocket/rocket.ino",
-    "port": "/dev/ttyACM0",
-    "board": null,
-    "output": null,
-    "_debugger": null,
-    "configuration": null
-}
