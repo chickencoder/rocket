@@ -23,12 +23,21 @@ void droneMode() {
   noteThree.setTable(SIN2048_DATA);
 }
 
+void arpMode() {
+  setEnv(200, 200, 10, 100, 10, 10);
+  noteOne.setTable(SAW2048_DATA);
+  noteTwo.setTable(SAW2048_DATA);
+  noteThree.setTable(SAW2048_DATA);
+}
+
 void updateMode() {
   if (MODE == SINE_MODE) {
     sineMode();
   } else if (MODE == SAW_MODE) {
     sawMode();
-  } else if (MODE == PING_MODE) {
+  } else if (MODE == DRONE_MODE) {
     droneMode();
+  } else if (MODE == ARP_MODE) {
+    arpMode();
   }
 }

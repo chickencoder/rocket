@@ -7,6 +7,9 @@ unsigned int octave = 5;
 byte k1, k2, k3, k4, k5, k6, k7, k8;
 int p1, p2;
 
+byte arp[16];
+int ap;
+
 Button b1 = Button(0, BUTTON_PULLUP_INTERNAL, true, 50);
 Button b2 = Button(1, BUTTON_PULLUP_INTERNAL, true, 10);
 Button b3 = Button(2, BUTTON_PULLUP_INTERNAL, true, 10);
@@ -19,36 +22,35 @@ Button f1 = Button(12, BUTTON_PULLUP_INTERNAL, true, 10);
 Button f2 = Button(13, BUTTON_PULLUP_INTERNAL, true, 10);
 
 void pressOne(Button& b) {
-  Serial.println("Click");
-  triggerNote(1, chooseChannel());
+  triggerNote(k1, chooseChannel());
 }
 
 void pressTwo(Button& b) {
-  triggerNote(2, chooseChannel());
+  triggerNote(k2, chooseChannel());
 }
 
 void pressThree(Button& b) {
-  triggerNote(3, chooseChannel());
+  triggerNote(k3, chooseChannel());
 }
 
 void pressFour(Button& b) {
-  triggerNote(4, chooseChannel());
+  triggerNote(k4, chooseChannel());
 }
 
 void pressFive(Button& b) {
-  triggerNote(5, chooseChannel());
+  triggerNote(k5, chooseChannel());
 }
 
 void pressSix(Button& b) {
-  triggerNote(6, chooseChannel());
+  triggerNote(k6, chooseChannel());
 }
 
 void pressSeven(Button& b) {
-  triggerNote(7, chooseChannel());
+  triggerNote(k7, chooseChannel());
 }
 
 void pressEight(Button& b) {
-  triggerNote(8, chooseChannel());
+  triggerNote(k8, chooseChannel());
 }
 
 /**
@@ -57,7 +59,7 @@ void pressEight(Button& b) {
 void pressNine(Button& b) {
   // Pause Mozzi for 500ms to switch mode
   pauseMozzi();
-  MODE = (MODE + 1) % 3;
+  MODE = (MODE + 1) % 4;
   updateMode();
   unPauseMozzi();
 }
@@ -102,116 +104,106 @@ void updateNotes() {
  */
 int chooseChannel() {
   if (!noteOneEnvelope.playing()) {
-    Serial.println("Chose 0");
     return 0;
   } else if (!noteTwoEnvelope.playing()) {
-    Serial.println("Chose 1");
     return 1;
   } else if (!noteThreeEnvelope.playing()) {
-    Serial.println("Chose 2");
     return 2;
   } else {
-    Serial.println("Chose 2");
     return 2;
   }
 }
 
-
-void triggerNote(int key, int channel) {
+void triggerNote(int note, int channel) {
   if (channel == 0) {
-      
-    if (key == 1) {
-      noteOne.setFreq((int)mtof(k1));
-      noteOneEnvelope.noteOn();
-    } else if (key == 2) {
-      noteOne.setFreq((int)mtof(k2));
-      noteOneEnvelope.noteOn();
-    } else if (key == 3) {
-      noteOne.setFreq((int)mtof(k3));
-      noteOneEnvelope.noteOn();
-    } else if (key == 4) {
-      noteOne.setFreq((int)mtof(k4));
-      noteOneEnvelope.noteOn();
-    } else if (key == 5) {
-      noteOne.setFreq((int)mtof(k5));
-      noteOneEnvelope.noteOn();
-    } else if (key == 6) {
-      noteOne.setFreq((int)mtof(k6));
-      noteOneEnvelope.noteOn();
-    } else if (key == 7) {
-      noteOne.setFreq((int)mtof(k7));
-      noteOneEnvelope.noteOn();
-    } else if (key == 8) {
-      noteOne.setFreq((int)mtof(k8));
-      noteOneEnvelope.noteOn();
-    }
+    noteOne.setFreq((int)mtof(note));
+    noteOneEnvelope.noteOn();
   } else if (channel == 1) {
-       if (key == 1) {
-      noteTwo.setFreq((int)mtof(k1));
-      noteTwoEnvelope.noteOn();
-    } else if (key == 2) {
-      noteTwo.setFreq((int)mtof(k2));
-      noteTwoEnvelope.noteOn();
-    } else if (key == 3) {
-      noteTwo.setFreq((int)mtof(k3));
-      noteTwoEnvelope.noteOn();
-    } else if (key == 4) {
-      noteTwo.setFreq((int)mtof(k4));
-      noteTwoEnvelope.noteOn();
-    } else if (key == 5) {
-      noteTwo.setFreq((int)mtof(k5));
-      noteTwoEnvelope.noteOn();
-    } else if (key == 6) {
-      noteTwo.setFreq((int)mtof(k6));
-      noteTwoEnvelope.noteOn();
-    } else if (key == 7) {
-      noteTwo.setFreq((int)mtof(k7));
-      noteTwoEnvelope.noteOn();
-    } else if (key == 8) {
-      noteTwo.setFreq((int)mtof(k8));
-      noteTwoEnvelope.noteOn();
-    }
+    noteTwo.setFreq((int)mtof(note));
+    noteTwoEnvelope.noteOn();
   } else if (channel == 2) {
-    if (key == 1) {
-      noteThree.setFreq((int)mtof(k1));
-      noteThreeEnvelope.noteOn();
-    } else if (key == 2) {
-      noteThree.setFreq((int)mtof(k2));
-      noteThreeEnvelope.noteOn();
-    } else if (key == 3) {
-      noteThree.setFreq((int)mtof(k3));
-      noteThreeEnvelope.noteOn();
-    } else if (key == 4) {
-      noteThree.setFreq((int)mtof(k4));
-      noteThreeEnvelope.noteOn();
-    } else if (key == 5) {
-      noteThree.setFreq((int)mtof(k5));
-      noteThreeEnvelope.noteOn();
-    } else if (key == 6) {
-      noteThree.setFreq((int)mtof(k6));
-      noteThreeEnvelope.noteOn();
-    } else if (key == 7) {
-      noteThree.setFreq((int)mtof(k7));
-      noteThreeEnvelope.noteOn();
-    } else if (key == 8) {
-      noteThree.setFreq((int)mtof(k8));
-      noteThreeEnvelope.noteOn();
-    }
+    noteThree.setFreq((int)mtof(note));
+    noteThreeEnvelope.noteOn();
   }
 }
 
 void processInputs() {
-  b1.process();
-  b2.process();
-  b3.process();
-  b4.process();
-  b5.process();
-  b6.process();
-  b7.process();
-  b8.process();
-  f1.process();
-  f2.process();
+  if (MODE != ARP_MODE) {
+    b1.process();
+    b2.process();
+    b3.process();
+    b4.process();
+    b5.process();
+    b6.process();
+    b7.process();
+    b8.process();
+    f1.process();
+    f2.process();
+    p1 = mozziAnalogRead(A4);
+    p2 = mozziAnalogRead(A5);
+  }
+}
 
-  p1 = mozziAnalogRead(A4);
+void updateArp() {
+  // Firstly, play note at arp pointer then
+  // If key is being pressed, add to arp
+  // (and add note from next octave as well)
+  // inc ap by 2 each time
+  // insert notes at ap-2, ap-1
+  // if arp pointer gets to 15, set back to 0
+  if (MODE == ARP_MODE) {
+    if (arp[ap] != 0) {
+      Serial.print("Trigger");
+      Serial.println(arp[ap]);
+      triggerNote(arp[ap], 0);
+      triggerNote(arp[ap+1], 0);
+      
+      if (ap == 15) {
+        ap = 0;
+      } else {
+        ap += 2;
+      }
+    } else {
+      ap += 2;
+    }
+    
+    if (digitalRead(0) == LOW) {
+      Serial.println("ARP");
+      Serial.println(arp[0]);
+      Serial.println(ap);
+      arp[ap-2] = k1;
+      arp[ap-1] = k1 + 12;
+    }
+
+    if (digitalRead(1) == LOW) {
+      arp[ap-2] = k2;
+      arp[ap-1] = k2 + 12;
+    }
+
+    if (digitalRead(3) == LOW) {
+      arp[ap-2] = k4;
+      arp[ap-1] = k4 + 12;
+    }
+
+    if (digitalRead(4) == LOW) {
+      arp[ap-2] = k5;
+      arp[ap-1] = k5 + 12;
+    }
+
+    if (digitalRead(5) == LOW) {
+      arp[ap-2] = k6;
+      arp[ap-1] = k6 + 12;
+    }
+    
+    if (digitalRead(6) == LOW) {
+      arp[ap-2] = k7;
+      arp[ap-1] = k7 + 12;
+    }
+
+    if (digitalRead(7) == LOW) {
+      arp[ap-2] = k8;
+      arp[ap-1] = k8 + 12;
+    }
+  }
 }
 

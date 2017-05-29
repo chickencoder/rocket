@@ -35,17 +35,23 @@
 #include <ADSR.h>
 #include <LowPassFilter.h>
 #include <EventDelay.h>
+#include <Metronome.h>
 #include <mozzi_midi.h>
 #include <tables/sin2048_int8.h>
 #include <tables/saw2048_int8.h>
 #include <samples/bamboo/bamboo_00_2048_int8.h>
 #include <Button.h>
 
+/** Constants **/
 #define CONTROL_RATE 64
 #define SINE_MODE 0
 #define SAW_MODE 1
-#define PING_MODE 2
-byte MODE = 0;
+#define DRONE_MODE 2
+#define ARP_MODE 3
+
+/** Globals **/
+byte MODE = ARP_MODE;
+unsigned int bpm = 120;
 
 /** Osciallators **/
 Oscil <2048, AUDIO_RATE> noteOne(SIN2048_DATA);
@@ -57,27 +63,37 @@ ADSR <CONTROL_RATE, AUDIO_RATE> noteOneEnvelope;
 ADSR <CONTROL_RATE, AUDIO_RATE> noteTwoEnvelope;
 ADSR <CONTROL_RATE, AUDIO_RATE> noteThreeEnvelope;
 
+/** Event Delays **/
+EventDelay tempo;
+Metronome metro;
+
 /** Filters **/
 //LowPassFilter lpf;
 
 void setup() {
   Serial.begin(115200);
-  startMozzi(CONTROL_RATE);  
+  startMozzi(CONTROL_RATE);
   setupInputs();
   updateNotes();
   updateMode();
+  setTempo();
+
+  // Setup LED pin
+  pinMode(11, OUTPUT);
 }
 
 void updateControl() {
   processInputs();
   updateEnvelopes();
+  updateTempo();
+  digitalWrite(11, LOW);
 }
 
 int updateAudio() {
   int chanA = ((int)noteOne.next() * (long)noteOneEnvelope.next()) >> 8;
   int chanB = ((int)noteTwo.next() * (long)noteTwoEnvelope.next()) >> 8;
   int chanC = ((int)noteThree.next() * (long)noteThreeEnvelope.next()) >> 8;
-  return chanA + chanB + chanC / 3;
+  return (chanA + chanB + chanC) / 3;
 }
 
 void loop() {
