@@ -1,6 +1,3 @@
-#include <Button.h>
-
-
 /**
  * Rocket Software for the Orbiter-1
  * Portable polyphonic instrument
@@ -44,6 +41,7 @@
 #define CONTROL_RATE 64
 #define FM_MODE 0
 #define FM_ARP_MODE 1
+byte MODE = 0;
 
 /** Osciallators **/
 Oscil <1024, AUDIO_RATE> noteOne(SIN2048_DATA);
