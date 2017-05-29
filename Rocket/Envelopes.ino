@@ -8,26 +8,16 @@ void updateEnvelopes() {
   noteThreeEnvelope.update();
 }
 
-void setupStandardEnv() {
-  noteOneEnvelope.setADLevels(100, 100);
-  noteOneEnvelope.setTimes(250, 500, 250, 500);
+void setEnv(int attack_level, int decay_level, int attack, int decay, int sustain, int releaset) {
+  noteOneEnvelope.setADLevels(attack_level, decay_level);
+  noteOneEnvelope.setTimes(attack, decay, sustain, releaset);
 
-  noteTwoEnvelope.setADLevels(100, 100);
-  noteTwoEnvelope.setTimes(250, 500, 250, 500);
+  noteTwoEnvelope.setADLevels(attack_level, decay_level);
+  noteTwoEnvelope.setTimes(attack, decay, sustain, releaset);
 
-  noteThreeEnvelope.setADLevels(100, 100);
-  noteThreeEnvelope.setTimes(250, 500, 250, 500);
+  noteThreeEnvelope.setADLevels(attack_level, decay_level);
+  noteThreeEnvelope.setTimes(attack, decay, sustain, releaset);
 }
 
-void zapEnv() {
-  noteOneEnvelope.setADLevels(100, 100);
-  noteOneEnvelope.setTimes(250, 500, 250, 500);
-
-  noteTwoEnvelope.setADLevels(100, 100);
-  noteTwoEnvelope.setTimes(250, 500, 250, 500);
-
-  noteThreeEnvelope.setADLevels(100, 100);
-  noteThreeEnvelope.setTimes(250, 500, 250, 500);
-}
 
 

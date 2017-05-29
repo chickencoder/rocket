@@ -33,32 +33,39 @@
 #include <MozziGuts.h>
 #include <Oscil.h>
 #include <ADSR.h>
+#include <LowPassFilter.h>
 #include <EventDelay.h>
 #include <mozzi_midi.h>
 #include <tables/sin2048_int8.h>
+#include <tables/saw2048_int8.h>
+#include <samples/bamboo/bamboo_00_2048_int8.h>
 #include <Button.h>
 
 #define CONTROL_RATE 64
-#define FM_MODE 0
-#define FM_ARP_MODE 1
+#define SINE_MODE 0
+#define SAW_MODE 1
+#define PING_MODE 2
 byte MODE = 0;
 
 /** Osciallators **/
-Oscil <1024, AUDIO_RATE> noteOne(SIN2048_DATA);
-Oscil <1024, AUDIO_RATE> noteTwo(SIN2048_DATA);
-Oscil <1024, AUDIO_RATE> noteThree(SIN2048_DATA);
+Oscil <2048, AUDIO_RATE> noteOne(SIN2048_DATA);
+Oscil <2048, AUDIO_RATE> noteTwo(SIN2048_DATA);
+Oscil <2048, AUDIO_RATE> noteThree(SIN2048_DATA);
 
 /** Envelopes **/
 ADSR <CONTROL_RATE, AUDIO_RATE> noteOneEnvelope;
 ADSR <CONTROL_RATE, AUDIO_RATE> noteTwoEnvelope;
 ADSR <CONTROL_RATE, AUDIO_RATE> noteThreeEnvelope;
 
+/** Filters **/
+//LowPassFilter lpf;
+
 void setup() {
   Serial.begin(115200);
   startMozzi(CONTROL_RATE);  
   setupInputs();
-  setupStandardEnv();
   updateNotes();
+  updateMode();
 }
 
 void updateControl() {
@@ -67,10 +74,10 @@ void updateControl() {
 }
 
 int updateAudio() {
-  int chanA = (int) (noteOne.next() * (long) noteOneEnvelope.next()) >> 8;
-  int chanB = ((int) noteTwo.next() * (long) noteTwoEnvelope.next()) >> 8;
-  int chanC = ((int) noteThree.next() * (long) noteThreeEnvelope.next()) >> 8;
-  return chanA + chanB + chanC;
+  int chanA = ((int)noteOne.next() * (long)noteOneEnvelope.next()) >> 8;
+  int chanB = ((int)noteTwo.next() * (long)noteTwoEnvelope.next()) >> 8;
+  int chanC = ((int)noteThree.next() * (long)noteThreeEnvelope.next()) >> 8;
+  return chanA + chanB + chanC / 3;
 }
 
 void loop() {

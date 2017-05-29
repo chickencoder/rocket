@@ -3,10 +3,9 @@
  * Handles setup & listening for keys
  */
 
-#include <Button.h>
-
 unsigned int octave = 5;
 byte k1, k2, k3, k4, k5, k6, k7, k8;
+int p1, p2;
 
 Button b1 = Button(0, BUTTON_PULLUP_INTERNAL, true, 50);
 Button b2 = Button(1, BUTTON_PULLUP_INTERNAL, true, 10);
@@ -52,8 +51,15 @@ void pressEight(Button& b) {
   triggerNote(8, chooseChannel());
 }
 
+/**
+ * F1 currently wired to mode select
+ */
 void pressNine(Button& b) {
-
+  // Pause Mozzi for 500ms to switch mode
+  pauseMozzi();
+  MODE = (MODE + 1) % 3;
+  updateMode();
+  unPauseMozzi();
 }
 
 void pressTen(Button& b) {
@@ -110,8 +116,10 @@ int chooseChannel() {
   }
 }
 
+
 void triggerNote(int key, int channel) {
   if (channel == 0) {
+      
     if (key == 1) {
       noteOne.setFreq((int)mtof(k1));
       noteOneEnvelope.noteOn();
@@ -138,55 +146,55 @@ void triggerNote(int key, int channel) {
       noteOneEnvelope.noteOn();
     }
   } else if (channel == 1) {
-    if (key == 1) {
-      noteTwo.setFreq(mtof(60));
+       if (key == 1) {
+      noteTwo.setFreq((int)mtof(k1));
       noteTwoEnvelope.noteOn();
     } else if (key == 2) {
-      noteTwo.setFreq(mtof(62));
+      noteTwo.setFreq((int)mtof(k2));
       noteTwoEnvelope.noteOn();
     } else if (key == 3) {
-      noteTwo.setFreq(mtof(64));
+      noteTwo.setFreq((int)mtof(k3));
       noteTwoEnvelope.noteOn();
     } else if (key == 4) {
-      noteTwo.setFreq(mtof(65));
+      noteTwo.setFreq((int)mtof(k4));
       noteTwoEnvelope.noteOn();
     } else if (key == 5) {
-      noteTwo.setFreq(mtof(67));
+      noteTwo.setFreq((int)mtof(k5));
       noteTwoEnvelope.noteOn();
     } else if (key == 6) {
-      noteTwo.setFreq(mtof(69));
+      noteTwo.setFreq((int)mtof(k6));
       noteTwoEnvelope.noteOn();
     } else if (key == 7) {
-      noteTwo.setFreq(mtof(71));
+      noteTwo.setFreq((int)mtof(k7));
       noteTwoEnvelope.noteOn();
     } else if (key == 8) {
-      noteTwo.setFreq(mtof(72));
+      noteTwo.setFreq((int)mtof(k8));
       noteTwoEnvelope.noteOn();
     }
-  } else if (key == 2) {
+  } else if (channel == 2) {
     if (key == 1) {
-      noteThree.setFreq(mtof(60));
+      noteThree.setFreq((int)mtof(k1));
       noteThreeEnvelope.noteOn();
     } else if (key == 2) {
-      noteThree.setFreq(mtof(62));
+      noteThree.setFreq((int)mtof(k2));
       noteThreeEnvelope.noteOn();
     } else if (key == 3) {
-      noteThree.setFreq(mtof(64));
+      noteThree.setFreq((int)mtof(k3));
       noteThreeEnvelope.noteOn();
     } else if (key == 4) {
-      noteThree.setFreq(mtof(65));
+      noteThree.setFreq((int)mtof(k4));
       noteThreeEnvelope.noteOn();
     } else if (key == 5) {
-      noteThree.setFreq(mtof(67));
+      noteThree.setFreq((int)mtof(k5));
       noteThreeEnvelope.noteOn();
     } else if (key == 6) {
-      noteThree.setFreq(mtof(69));
+      noteThree.setFreq((int)mtof(k6));
       noteThreeEnvelope.noteOn();
     } else if (key == 7) {
-      noteThree.setFreq(mtof(71));
+      noteThree.setFreq((int)mtof(k7));
       noteThreeEnvelope.noteOn();
     } else if (key == 8) {
-      noteThree.setFreq(mtof(72));
+      noteThree.setFreq((int)mtof(k8));
       noteThreeEnvelope.noteOn();
     }
   }
@@ -203,5 +211,7 @@ void processInputs() {
   b8.process();
   f1.process();
   f2.process();
+
+  p1 = mozziAnalogRead(A4);
 }
 
