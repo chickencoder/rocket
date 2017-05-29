@@ -8,7 +8,7 @@ byte k1, k2, k3, k4, k5, k6, k7, k8;
 int p1, p2;
 
 byte arp[16];
-int ap;
+int ap, sp;
 
 Button b1 = Button(0, BUTTON_PULLUP_INTERNAL, true, 50);
 Button b2 = Button(1, BUTTON_PULLUP_INTERNAL, true, 10);
@@ -152,58 +152,87 @@ void updateArp() {
   // insert notes at ap-2, ap-1
   // if arp pointer gets to 15, set back to 0
   if (MODE == ARP_MODE) {
-    if (arp[ap] != 0) {
-      Serial.print("Trigger");
-      Serial.println(arp[ap]);
-      triggerNote(arp[ap], 0);
-      triggerNote(arp[ap+1], 0);
-      
-      if (ap == 15) {
-        ap = 0;
-      } else {
-        ap += 2;
-      }
-    } else {
-      ap += 2;
-    }
-    
     if (digitalRead(0) == LOW) {
-      Serial.println("ARP");
-      Serial.println(arp[0]);
-      Serial.println(ap);
-      arp[ap-2] = k1;
-      arp[ap-1] = k1 + 12;
+      arp[sp] = k1;
+      sp++;
+      arp[sp] = k1 + 12;
+      sp++;
+    }
+
+    if (digitalRead(0) == LOW) {
+      arp[sp] = k1;
+      sp++;
+      arp[sp] = k1 + 12;
+      sp++;
     }
 
     if (digitalRead(1) == LOW) {
-      arp[ap-2] = k2;
-      arp[ap-1] = k2 + 12;
+      arp[sp] = k2;
+      sp++;
+      arp[sp] = k1 + 12;
+      sp++;
+    }
+
+    if (digitalRead(2) == LOW) {
+      arp[sp] = k3;
+      sp++;
+      arp[sp] = k1 + 12;
+      sp++;
     }
 
     if (digitalRead(3) == LOW) {
-      arp[ap-2] = k4;
-      arp[ap-1] = k4 + 12;
+      arp[sp] = k4;
+      sp++;
+      arp[sp] = k1 + 12;
+      sp++;
     }
 
     if (digitalRead(4) == LOW) {
-      arp[ap-2] = k5;
-      arp[ap-1] = k5 + 12;
+      arp[sp] = k5;
+      sp++;
+      arp[sp] = k1 + 12;
+      sp++;
     }
 
     if (digitalRead(5) == LOW) {
-      arp[ap-2] = k6;
-      arp[ap-1] = k6 + 12;
-    }
-    
-    if (digitalRead(6) == LOW) {
-      arp[ap-2] = k7;
-      arp[ap-1] = k7 + 12;
+      arp[sp] = k6;
+      sp++;
+      arp[sp] = k1 + 12;
+      sp++;
     }
 
-    if (digitalRead(7) == LOW) {
-      arp[ap-2] = k8;
-      arp[ap-1] = k8 + 12;
+    if (digitalRead(6) == LOW) {
+      arp[sp] = k7;
+      sp++;
+      arp[sp] = k1 + 12;
+      sp++;
     }
+    
+    if (digitalRead(7) == LOW) {
+      arp[sp] = k8;
+      sp++;
+      arp[sp] = k1 + 12;
+      sp++;
+    }
+
+    if (sp > 16) {
+      sp = 0;
+    }
+
+    // Play notes on each beat
+    if (ap < 15) {
+      triggerNote(arp[ap], 0);
+      ap += 1;
+    } else {
+      triggerNote(arp[ap], 0);
+      ap = 0;
+    }
+  }
+}
+
+void updateTempo() {
+  if (metro.ready()) {
+    updateArp();
   }
 }
 

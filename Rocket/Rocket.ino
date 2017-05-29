@@ -51,7 +51,7 @@
 
 /** Globals **/
 byte MODE = ARP_MODE;
-unsigned int bpm = 120;
+unsigned int bpm = 240;
 
 /** Osciallators **/
 Oscil <2048, AUDIO_RATE> noteOne(SIN2048_DATA);
@@ -76,8 +76,9 @@ void setup() {
   setupInputs();
   updateNotes();
   updateMode();
-  setTempo();
-
+  metro.setBPM(bpm);
+  metro.start();
+  
   // Setup LED pin
   pinMode(11, OUTPUT);
 }
