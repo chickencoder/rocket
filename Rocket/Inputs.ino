@@ -8,7 +8,6 @@ byte k1, k2, k3, k4, k5, k6, k7, k8;
 int p1, p2;
 
 byte arp[16];
-byte arp2[16];
 int ap, sp;
 
 Button b1 = Button(0, BUTTON_PULLUP_INTERNAL, true, 50);
@@ -60,7 +59,7 @@ void pressEight(Button& b) {
 void pressNine(Button& b) {
   // Pause Mozzi for 500ms to switch mode
   pauseMozzi();
-  MODE = (MODE + 1) % 4;
+  MODE = (MODE + 1) % 6;
   updateMode();
   unPauseMozzi();
 }
@@ -116,15 +115,37 @@ int chooseChannel() {
 }
 
 void triggerNote(int note, int channel) {
-  if (channel == 0) {
+  if (MONO_MODE) {
     noteOne.setFreq((int)mtof(note));
     noteOneEnvelope.noteOn();
-  } else if (channel == 1) {
     noteTwo.setFreq((int)mtof(note));
     noteTwoEnvelope.noteOn();
-  } else if (channel == 2) {
     noteThree.setFreq((int)mtof(note));
     noteThreeEnvelope.noteOn();
+  } else if (HOOK_LFO) {
+    if (channel == 0) {
+      noteOne.setFreq((int)mtof(note));
+      noteOneEnvelope.noteOn();
+      LFO.setFreq((int)mtof(note-24));
+      LFOEnvelope.noteOn();
+    } else if (channel == 1) {
+      noteTwo.setFreq((int)mtof(note));
+      noteTwoEnvelope.noteOn();
+    } else if (channel == 2) {
+      noteThree.setFreq((int)mtof(note));
+      noteThreeEnvelope.noteOn();
+    }
+  } else {
+    if (channel == 0) {
+      noteOne.setFreq((int)mtof(note));
+      noteOneEnvelope.noteOn();
+    } else if (channel == 1) {
+      noteTwo.setFreq((int)mtof(note));
+      noteTwoEnvelope.noteOn();
+    } else if (channel == 2) {
+      noteThree.setFreq((int)mtof(note));
+      noteThreeEnvelope.noteOn();
+    }
   }
 }
 
@@ -138,10 +159,17 @@ void processInputs() {
     b6.process();
     b7.process();
     b8.process();
-    f1.process();
-    f2.process();
-    p1 = mozziAnalogRead(A4);
-    p2 = mozziAnalogRead(A5);
+  }
+  f1.process();
+  f2.process();
+  p1 = mozziAnalogRead(A4);
+  p2 = mozziAnalogRead(A5);
+
+  if (MODE == AM_MODE || MODE == FM_MODE) {
+    LFO.setFreq(p1);
+  } else if (MODE == ARP_MODE) {
+    Serial.println(p1/500+10);
+    setTempo(p1/500+10);
   }
 }
 
@@ -156,63 +184,63 @@ void updateArp() {
     if (digitalRead(0) == LOW) {
       arp[sp] = k1;
       sp++;
-      arp2[sp] = k1 + 12;
+      arp[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(0) == LOW) {
       arp[sp] = k1;
       sp++;
-      arp2[sp] = k1 + 12;
+      arp[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(1) == LOW) {
       arp[sp] = k2;
       sp++;
-      arp2[sp] = k1 + 12;
+      arp[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(2) == LOW) {
       arp[sp] = k3;
       sp++;
-      arp2[sp] = k1 + 12;
+      arp[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(3) == LOW) {
       arp[sp] = k4;
       sp++;
-      arp2[sp] = k1 + 12;
+      arp[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(4) == LOW) {
       arp[sp] = k5;
       sp++;
-      arp2[sp] = k1 + 12;
+      arp[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(5) == LOW) {
       arp[sp] = k6;
       sp++;
-      arp2[sp] = k1 + 12;
+      arp[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(6) == LOW) {
       arp[sp] = k7;
       sp++;
-      arp2[sp] = k1 + 12;
+      arp[sp] = k1 + 12;
       sp++;
     }
     
     if (digitalRead(7) == LOW) {
       arp[sp] = k8;
       sp++;
-      arp2[sp] = k1 + 12;
+      arp[sp] = k1 + 12;
       sp++;
     }
 
@@ -231,13 +259,17 @@ void updateArp() {
     // Play notes on each beat
     if (ap < 15) {
       triggerNote(arp[ap], 0);
-      triggerNote(arp2[ap], 1);
       ap += 1;
     } else {
       triggerNote(arp[ap], 0);
-      triggerNote(arp2[ap], 1);
       ap = 0;
     }
+  }
+}
+
+void setTempo(int newBpm) {
+  if (abs(newBpm - bpm) > 5) {
+    bpm = newBpm;
   }
 }
 

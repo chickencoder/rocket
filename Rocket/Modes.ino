@@ -2,14 +2,24 @@
  * Modes
  */
 
-void sineMode() {
-  setEnv(200, 100, 500, 200, 600, 400);
+void resetMode() {
+  // Reset to defaults
+  HOOK_LFO = false;
+  MONO_MODE = false;
+  octave = 5;
+  updateNotes();
+}
+
+void amMode() {
+  resetMode();
+  setEnv(200, 100, 500, 200, 1000, 800);
   noteOne.setTable(SIN2048_DATA);
   noteTwo.setTable(SIN2048_DATA);
   noteThree.setTable(SIN2048_DATA);
 }
 
 void sawMode() {
+  resetMode();
   setEnv(200, 200, 100, 300, 200, 200);
   noteOne.setTable(SAW2048_DATA);
   noteTwo.setTable(SAW2048_DATA);
@@ -17,27 +27,54 @@ void sawMode() {
 }
 
 void droneMode() {
-  setEnv(200, 200, 100, 300, 200, 200);
+  resetMode();
+  HOOK_LFO = true;
+  setEnv(200, 200, 500, 300, 500, 1000);
   noteOne.setTable(SIN2048_DATA);
   noteTwo.setTable(SIN2048_DATA);
   noteThree.setTable(SIN2048_DATA);
 }
 
 void arpMode() {
+  resetMode();
+  MONO_MODE = true;
+  setEnv(200, 200, 10, 100, 10, 10);
+  noteOne.setTable(TRIANGLE2048_DATA);
+  noteTwo.setTable(TRIANGLE2048_DATA);
+  noteThree.setTable(TRIANGLE2048_DATA);
+}
+
+void bassMode() {
+  resetMode();
+  octave = 3;
+  updateNotes();
+  MONO_MODE = true;
   setEnv(200, 200, 10, 100, 10, 10);
   noteOne.setTable(SAW2048_DATA);
-  noteTwo.setTable(SIN2048_DATA);
+  noteTwo.setTable(SAW2048_DATA);
+  noteThree.setTable(SAW2048_DATA);
+}
+
+void fmMode() {
+  resetMode();
+  setEnv(200, 200, 10, 20, 200, 400);
+  noteOne.setTable(SAW2048_DATA);
+  noteTwo.setTable(SAW2048_DATA);
   noteThree.setTable(SAW2048_DATA);
 }
 
 void updateMode() {
-  if (MODE == SINE_MODE) {
-    sineMode();
+  if (MODE == AM_MODE) {
+    amMode();
   } else if (MODE == SAW_MODE) {
     sawMode();
   } else if (MODE == DRONE_MODE) {
     droneMode();
   } else if (MODE == ARP_MODE) {
     arpMode();
+  } else if (MODE == BASS_MODE) {
+    bassMode();
+  } else if (MODE == FM_MODE) {
+    fmMode();
   }
 }

@@ -35,33 +35,41 @@
 #include <ADSR.h>
 #include <LowPassFilter.h>
 #include <EventDelay.h>
+#include <AudioDelayFeedback.h>
 #include <Metronome.h>
 #include <mozzi_midi.h>
 #include <tables/sin2048_int8.h>
 #include <tables/saw2048_int8.h>
-#include <samples/bamboo/bamboo_00_2048_int8.h>
+#include <tables/triangle2048_int8.h>
 #include <Button.h>
 
 /** Constants **/
 #define CONTROL_RATE 64
-#define SINE_MODE 0
-#define SAW_MODE 1
-#define DRONE_MODE 2
+#define DRONE_MODE 0
+#define AM_MODE 1
+#define SAW_MODE 2
 #define ARP_MODE 3
+#define BASS_MODE 4
+#define FM_MODE 5
 
 /** Globals **/
-byte MODE = ARP_MODE;
+byte MODE = 0;
+bool MONO_MODE = false;
+bool HOOK_LFO = false;
 unsigned int bpm = 240;
 
 /** Osciallators **/
 Oscil <2048, AUDIO_RATE> noteOne(SIN2048_DATA);
 Oscil <2048, AUDIO_RATE> noteTwo(SIN2048_DATA);
 Oscil <2048, AUDIO_RATE> noteThree(SIN2048_DATA);
+Oscil <2048, AUDIO_RATE> LFO(SIN2048_DATA);
 
 /** Envelopes **/
 ADSR <CONTROL_RATE, AUDIO_RATE> noteOneEnvelope;
 ADSR <CONTROL_RATE, AUDIO_RATE> noteTwoEnvelope;
 ADSR <CONTROL_RATE, AUDIO_RATE> noteThreeEnvelope;
+ADSR <CONTROL_RATE, AUDIO_RATE> LFOEnvelope;
+
 
 /** Event Delays **/
 EventDelay tempo;
@@ -78,23 +86,37 @@ void setup() {
   updateMode();
   metro.setBPM(bpm);
   metro.start();
-  
-  // Setup LED pin
-  pinMode(11, OUTPUT);
 }
 
 void updateControl() {
   processInputs();
   updateEnvelopes();
   updateTempo();
-  digitalWrite(11, LOW);
 }
 
 int updateAudio() {
-  int chanA = ((int)noteOne.next() * (long)noteOneEnvelope.next()) >> 8;
-  int chanB = ((int)noteTwo.next() * (long)noteTwoEnvelope.next()) >> 8;
-  int chanC = ((int)noteThree.next() * (long)noteThreeEnvelope.next()) >> 8;
-  return (chanA + chanB + chanC) / 3;
+  if (MODE == AM_MODE) {
+    int chanA = ((int)noteOne.next() * LFO.next() * (long)noteOneEnvelope.next()) >> 16;
+    int chanB = ((int)noteTwo.next() * LFO.next() * (long)noteTwoEnvelope.next()) >> 16;
+    int chanC = ((int)noteThree.next() * LFO.next() * (long)noteThreeEnvelope.next()) >> 16;
+    return (chanA + chanB + chanC) / 2;
+  } else if (HOOK_LFO) {
+    int chanA = ((int)noteOne.next() * (long)noteOneEnvelope.next()) >> 8;
+    int chanB = ((int)noteTwo.next() * (long)noteTwoEnvelope.next()) >> 8;
+    int chanC = ((int)noteThree.next() * (long)noteThreeEnvelope.next()) >> 8;
+    int chanD = ((int)LFO.next() * (long)LFOEnvelope.next()) >> 8;
+    return (chanA + chanB + chanC + chanD) / 4;
+  } else if (FM_MODE) {
+    int chanA = ((int)noteOne.next() * (long)noteOneEnvelope.next()) >> 8;
+    int chanB = ((int)noteTwo.next() * (long)noteTwoEnvelope.next()) >> 8;
+    int chanC = ((int)noteThree.next() * (long)noteThreeEnvelope.next()) >> 8;
+    return (chanA + chanB + chanC) / 3;
+  } else {
+    int chanA = ((int)noteOne.phMod(LFO.next()) * (long)noteOneEnvelope.next()) >> 8;
+    int chanB = ((int)noteTwo.phMod(LFO.next()) * (long)noteTwoEnvelope.next()) >> 8;
+    int chanC = ((int)noteThree.phMod(LFO.next()) * (long)noteThreeEnvelope.next()) >> 8;
+    return (chanA + chanB + chanC) / 3;
+  }
 }
 
 void loop() {
