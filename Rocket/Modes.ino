@@ -26,7 +26,7 @@ void droneMode() {
 void arpMode() {
   setEnv(200, 200, 10, 100, 10, 10);
   noteOne.setTable(SAW2048_DATA);
-  noteTwo.setTable(SAW2048_DATA);
+  noteTwo.setTable(SIN2048_DATA);
   noteThree.setTable(SAW2048_DATA);
 }
 

@@ -8,6 +8,7 @@ byte k1, k2, k3, k4, k5, k6, k7, k8;
 int p1, p2;
 
 byte arp[16];
+byte arp2[16];
 int ap, sp;
 
 Button b1 = Button(0, BUTTON_PULLUP_INTERNAL, true, 50);
@@ -155,63 +156,63 @@ void updateArp() {
     if (digitalRead(0) == LOW) {
       arp[sp] = k1;
       sp++;
-      arp[sp] = k1 + 12;
+      arp2[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(0) == LOW) {
       arp[sp] = k1;
       sp++;
-      arp[sp] = k1 + 12;
+      arp2[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(1) == LOW) {
       arp[sp] = k2;
       sp++;
-      arp[sp] = k1 + 12;
+      arp2[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(2) == LOW) {
       arp[sp] = k3;
       sp++;
-      arp[sp] = k1 + 12;
+      arp2[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(3) == LOW) {
       arp[sp] = k4;
       sp++;
-      arp[sp] = k1 + 12;
+      arp2[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(4) == LOW) {
       arp[sp] = k5;
       sp++;
-      arp[sp] = k1 + 12;
+      arp2[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(5) == LOW) {
       arp[sp] = k6;
       sp++;
-      arp[sp] = k1 + 12;
+      arp2[sp] = k1 + 12;
       sp++;
     }
 
     if (digitalRead(6) == LOW) {
       arp[sp] = k7;
       sp++;
-      arp[sp] = k1 + 12;
+      arp2[sp] = k1 + 12;
       sp++;
     }
     
     if (digitalRead(7) == LOW) {
       arp[sp] = k8;
       sp++;
-      arp[sp] = k1 + 12;
+      arp2[sp] = k1 + 12;
       sp++;
     }
 
@@ -219,12 +220,22 @@ void updateArp() {
       sp = 0;
     }
 
+    if (digitalRead(0) + digitalRead(1) + digitalRead(2) + digitalRead(3) +
+        digitalRead(4) + digitalRead(5) + digitalRead(6) + digitalRead(7) == 8) {
+      for (int i = 0; i < 16; i++) {
+        arp[i] = 0;
+        ap = 0;
+      }
+    }
+
     // Play notes on each beat
     if (ap < 15) {
       triggerNote(arp[ap], 0);
+      triggerNote(arp2[ap], 1);
       ap += 1;
     } else {
       triggerNote(arp[ap], 0);
+      triggerNote(arp2[ap], 1);
       ap = 0;
     }
   }
