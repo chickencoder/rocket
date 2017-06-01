@@ -59,16 +59,24 @@ void pressEight(Button& b) {
 void pressNine(Button& b) {
   // Pause Mozzi for 500ms to switch mode
   pauseMozzi();
-  MODE = (MODE + 1) % 6;
+  MODE = (MODE + 1) % 5;
   updateMode();
   unPauseMozzi();
 }
 
 void pressTen(Button& b) {
+  // Turn ARP on/or off
+  Serial.println(ARP_MODE);
+  ARP_MODE *= -1;
+  if (ARP_MODE == 1) {
+    activateArp();
+  } else {
+    deactivateArp();
+  }
 }
 
 void setupInputs() {
-  b1.pressHandler(pressOne);
+  b1.pressHandler(pressOne); 
   b2.pressHandler(pressTwo);
   b3.pressHandler(pressThree);
   b4.pressHandler(pressFour);
@@ -150,7 +158,7 @@ void triggerNote(int note, int channel) {
 }
 
 void processInputs() {
-  if (MODE != ARP_MODE) {
+  if (ARP_MODE == -1) {
     b1.process();
     b2.process();
     b3.process();
@@ -180,7 +188,7 @@ void updateArp() {
   // inc ap by 2 each time
   // insert notes at ap-2, ap-1
   // if arp pointer gets to 15, set back to 0
-  if (MODE == ARP_MODE) {
+  if (ARP_MODE == 1) {
     if (digitalRead(0) == LOW) {
       arp[sp] = k1;
       sp++;

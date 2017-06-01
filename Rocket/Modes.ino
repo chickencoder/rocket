@@ -6,6 +6,7 @@ void resetMode() {
   // Reset to defaults
   HOOK_LFO = false;
   MONO_MODE = false;
+  LFO.setTable(SIN2048_DATA);
   octave = 5;
   updateNotes();
 }
@@ -35,15 +36,6 @@ void droneMode() {
   noteThree.setTable(SIN2048_DATA);
 }
 
-void arpMode() {
-  resetMode();
-  MONO_MODE = true;
-  setEnv(200, 200, 10, 100, 10, 10);
-  noteOne.setTable(TRIANGLE2048_DATA);
-  noteTwo.setTable(TRIANGLE2048_DATA);
-  noteThree.setTable(TRIANGLE2048_DATA);
-}
-
 void bassMode() {
   resetMode();
   octave = 3;
@@ -57,10 +49,20 @@ void bassMode() {
 
 void fmMode() {
   resetMode();
+  MONO_MODE = true;
   setEnv(200, 200, 10, 20, 200, 400);
   noteOne.setTable(SAW2048_DATA);
-  noteTwo.setTable(SAW2048_DATA);
-  noteThree.setTable(SAW2048_DATA);
+  noteTwo.setTable(SIN2048_DATA);
+  noteThree.setTable(SIN2048_DATA);
+  LFO.setTable(SAW2048_DATA);
+}
+
+void activateArp() {
+  MONO_MODE = true;
+}
+
+void deactivateArp() {
+  updateMode();
 }
 
 void updateMode() {
@@ -70,8 +72,6 @@ void updateMode() {
     sawMode();
   } else if (MODE == DRONE_MODE) {
     droneMode();
-  } else if (MODE == ARP_MODE) {
-    arpMode();
   } else if (MODE == BASS_MODE) {
     bassMode();
   } else if (MODE == FM_MODE) {

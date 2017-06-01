@@ -48,13 +48,13 @@
 #define DRONE_MODE 0
 #define AM_MODE 1
 #define SAW_MODE 2
-#define ARP_MODE 3
-#define BASS_MODE 4
-#define FM_MODE 5
+#define BASS_MODE 3
+#define FM_MODE 4
 
 /** Globals **/
 byte MODE = 0;
 bool MONO_MODE = false;
+int ARP_MODE = -1;
 bool HOOK_LFO = false;
 unsigned int bpm = 240;
 
@@ -69,7 +69,6 @@ ADSR <CONTROL_RATE, AUDIO_RATE> noteOneEnvelope;
 ADSR <CONTROL_RATE, AUDIO_RATE> noteTwoEnvelope;
 ADSR <CONTROL_RATE, AUDIO_RATE> noteThreeEnvelope;
 ADSR <CONTROL_RATE, AUDIO_RATE> LFOEnvelope;
-
 
 /** Event Delays **/
 EventDelay tempo;
@@ -106,15 +105,15 @@ int updateAudio() {
     int chanC = ((int)noteThree.next() * (long)noteThreeEnvelope.next()) >> 8;
     int chanD = ((int)LFO.next() * (long)LFOEnvelope.next()) >> 8;
     return (chanA + chanB + chanC + chanD) / 4;
-  } else if (FM_MODE) {
-    int chanA = ((int)noteOne.next() * (long)noteOneEnvelope.next()) >> 8;
-    int chanB = ((int)noteTwo.next() * (long)noteTwoEnvelope.next()) >> 8;
-    int chanC = ((int)noteThree.next() * (long)noteThreeEnvelope.next()) >> 8;
-    return (chanA + chanB + chanC) / 3;
-  } else {
+  } else if (MODE == FM_MODE) {
     int chanA = ((int)noteOne.phMod(LFO.next()) * (long)noteOneEnvelope.next()) >> 8;
     int chanB = ((int)noteTwo.phMod(LFO.next()) * (long)noteTwoEnvelope.next()) >> 8;
     int chanC = ((int)noteThree.phMod(LFO.next()) * (long)noteThreeEnvelope.next()) >> 8;
+    return (chanA + chanB + chanC) / 3;
+  } else {
+    int chanA = ((int)noteOne.next() * (long)noteOneEnvelope.next()) >> 8;
+    int chanB = ((int)noteTwo.next() * (long)noteTwoEnvelope.next()) >> 8;
+    int chanC = ((int)noteThree.next() * (long)noteThreeEnvelope.next()) >> 8;
     return (chanA + chanB + chanC) / 3;
   }
 }
